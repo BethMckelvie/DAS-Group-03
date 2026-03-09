@@ -1,1 +1,199 @@
+---
+title: "Explanatory analysis for part 2"
+format: html
+editor: visual
+---
+
+## Introduction:
+
+*Italics will be editor comments, so the compiling of the project is easier.*
+
+*Question of Interest: Are there any differences in obesity by age, gender, socio-economic status or lifestyle factors?*
+
+This section explores obesity prevalence using data from the Scottish Health Survey (2013–2016). The response variable is obesity status (Yes/No). Differences in obesity prevalence are examined across age group, sex, employment status, and lifestyle factors such as fruit and vegetable intake. Approximately 30% of individuals in the dataset are classified as obese. The plots below compare obesity prevalence across these groups.
+
+## Plots:
+
+*The first set of code uses percentage to show the difference. I will also add an alt code for it to be shown on 0-1 scale, as proportions instead of percentages.*
+
+```{r}
+#| echo: FALSE
+#| output: FALSE
+library(tidyverse)
+library(ggplot2)
+
+data <- read.csv("DAProject3.csv", stringsAsFactors = TRUE)
+```
+
+```{r}
+#| echo: FALSE
+data$Obese <- factor(data$Obese)
+```
+
+#### Obesity vs Sex
+
+```{r}
+#| echo: false
+data$Sex <- factor(data$Sex)
+ggplot(data, aes(x = Sex, fill = Obese)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    x = "Sex",
+    y = "Percentage"
+  )
+
+```
+
+The percentage of individuals classified as obese is similar for males and females. Around 31% of females are classified as obese compared with about 29% of males. This suggests that the difference in obesity prevalence between the two groups is relatively small.
+
+#### Obesity vs Age Group
+
+```{r}
+#| echo: false
+data$AgeGroup <- factor(data$AgeGroup)
+ggplot(data, aes(x = AgeGroup, fill = Obese)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    x = "Age Group",
+    y = "Percentage"
+  )
+```
+
+Clear differences in obesity prevalence can be observed across age groups. Approximately 16% of individuals aged 16–24 are classified as obese, and this increases steadily across older age groups. The highest prevalence appears in the 65–74 age group at around 36–37%. The prevalence then decreases slightly to about 29% in the 75+ group.
+
+#### Obesity vs Employment
+
+```{r}
+#| echo: false
+data$Employment <- factor(data$Employment)
+ggplot(data, aes(x = Employment, fill = Obese)) +
+  geom_bar(position = "fill") +
+  labs(
+    title = "Obesity vs Employment",
+    x = "Employment",
+    y = "Percentage"
+  ) +
+  scale_y_continuous(labels = scales::percent) +
+  coord_flip()
+```
+
+Differences in obesity prevalence are visible across employment categories. Individuals permanently unable to work show the highest obesity prevalence at roughly 42–43%. Those looking after home or family also have relatively high obesity levels at around 37%. In contrast, individuals in full-time education have the lowest prevalence at approximately 17%.
+
+#### Obesity vs Fruit Intake
+
+```{r}
+#| echo: false
+data$Fruit <- factor(data$Fruit)
+ggplot(data, aes(x = Fruit, fill = Obese)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    x = "Fruit Intake",
+    y = "Percentage"
+  )
+```
+
+The percentage of obesity is very similar between individuals who meet the recommended fruit intake and those who do not. Both groups show obesity levels of around 30%. This suggests that fruit intake alone does not show a strong difference in obesity prevalence in this dataset.
+
+#### Obesity vs Vegetable Intake
+
+```{r}
+#| echo: false
+data$Veg <- factor(data$Veg)
+ggplot(data, aes(x = Veg, fill = Obese)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    x = "Vegetable Intake",
+    y = "Percentage"
+  )
+```
+
+A similar pattern is observed for vegetable intake. Individuals who meet the recommended vegetable intake show obesity prevalence of around 30%, while those who do not are slightly higher at around 33%. However, the difference between the groups remains relatively small.
+
+### Alternate code:
+
+#### Obesity vs Sex
+
+```{r}
+#| echo: false
+data$Sex <- factor(data$Sex)
+ggplot(data, aes(x = Sex, fill = Obese)) +
+  geom_bar(position = "fill") +
+  labs(
+    x = "Sex",
+    y = "Proportion"
+  )
+
+```
+
+The proportion of individuals classified as obese is similar for males and females. Females appear to have a slightly higher obesity prevalence than males. However, the difference between the two groups is small.
+
+#### Obesity vs Age Group
+
+```{r}
+#| echo: false
+data$AgeGroup <- factor(data$AgeGroup)
+ggplot(data, aes(x = AgeGroup, fill = Obese)) +
+  geom_bar(position = "fill") +
+  labs(
+    x = "Age Group",
+    y = "Proportion"
+  )
+```
+
+Differences in obesity prevalence can be observed across age groups. The proportion of individuals classified as obese increases from younger age groups and is highest in the 65–74 group. The prevalence then decreases slightly in the 75+ group. This suggests obesity is more common in middle-aged and older individuals.
+
+#### Obesity vs Employment
+
+```{r}
+#| echo: false
+data$Employment <- factor(data$Employment)
+ggplot(data, aes(x = Employment, fill = Obese)) +
+  geom_bar(position = "fill") +
+  labs(
+    title = "Obesity vs Employment",
+    x = "Employment",
+    y = "Proportion"
+  ) +
+  coord_flip()
+```
+
+Differences in obesity prevalence are visible across employment categories. Individuals who are permanently unable to work and those looking after home or family appear to have higher proportions of obesity. In contrast, individuals in full-time education show the lowest proportion of obesity.
+
+#### Obesity vs Fruit Intake
+
+```{r}
+#| echo: false
+data$Fruit <- factor(data$Fruit)
+ggplot(data, aes(x = Fruit, fill = Obese)) +
+  geom_bar(position = "fill") +
+  labs(
+    x = "Fruit Intake",
+    y = "Proportion"
+  )
+```
+
+The proportion of obesity is very similar between individuals who meet the recommended fruit intake and those who do not. Only a small difference can be seen between the two groups. This suggests fruit intake alone does not show a large difference in obesity prevalence in this dataset.
+
+#### Obesity vs Vegetable Intake
+
+```{r}
+#| echo: false
+data$Veg <- factor(data$Veg)
+ggplot(data, aes(x = Veg, fill = Obese)) +
+  geom_bar(position = "fill") +
+  labs(
+    x = "Vegetable Intake",
+    y = "Proportion"
+  )
+```
+
+A similar pattern is observed for vegetable intake. Individuals who meet the recommended vegetable intake appear to have slightly lower obesity prevalence than those who do not. However, the difference between the groups is relatively small.
+
+## Conclusion:
+
+Overall, the exploratory plots show that obesity prevalence differs across some demographic groups. Age group and employment status appear to show clearer differences. Lifestyle factors such as fruit and vegetable intake show smaller differences. These observations provide an initial overview of the data and may be explored further using statistical models.
 
