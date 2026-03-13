@@ -1,4 +1,116 @@
+For the first question of interest, a logistic regression model is fitted with year as the one categorical explanatory variable. The formula for the model is given below: $$
+y_i \sim \text{Bernoulli}(p_i)
+$$
 
+$$
+\text{logit}(p_i) = \alpha + \beta_{\text{2014}} \times \mathbb{I}_{\text{Year}}(\text{2014}) + \beta_{\text{2015}} \times \mathbb{I}_{\text{Year}}(\text{2015}) + \beta_{\text{2016}} \times \mathbb{I}_{\text{Year}}(\text{2016})
+$$
+
+-   Where
+
+    -   $y_i$ - the binary obesity outcome (Yes/No) for individual $i$
+    -   $p_i$ - the probability of individual $i$ being obese
+    -   $\alpha$ - the intercept, representing the log-odds of obesity in the reference year (2013)
+    -   $\beta_{\text{2014}}, \beta_{\text{2015}}, \beta_{\text{2016}}$ - the log-odds ratios for each year relative to the reference year (2013)
+    -   $\mathbb{I}_{\text{Year}}(\text{2014}), \mathbb{I}_{\text{Year}}(\text{2015}), \mathbb{I}_{\text{Year}}(\text{2016})$ - indicator functions equal to 1 if the observation is from that year, and 0 otherwise
+
+    ```{r}
+
+    #|eval: false 
+
+    data <- read.csv("DAProject3.csv",stringsAsFactors = T)
+    library(ggplot2) 
+    library(tidyverse)
+    data.obese <- data %>%
+      select(Obese, Year)
+
+
+    data.obese$Year <- as.factor(data.obese$Year ) 
+
+    data.obese$Year %>% levels
+
+    ```
+
+```{r}
+#|eval: false 
+
+
+library(sjPlot)
+
+model.year <- glm(Obese ~ Year, data = data.obese, family = binomial)
+model.year %>%
+  tab_model(transform = NULL)
+
+plot_model(model.year, 
+           show.values = TRUE, 
+           transform = NULL, 
+           title = "Log-Odds (Obesity per year)", 
+           show.p = FALSE)
+
+
+
+```
+
+```{r}
+
+#|eval: false 
+ 
+model.year %>%
+  tab_model(transform = "exp")
+
+plot_model(model.year,
+           transform = "exp",
+           show.values = TRUE,
+           title = "Odds (Obese)" ,
+           show.p = TRUE)
+
+```
+
+From The R output above shows that
+
+The probabilities for each year are shown below in table ... order of 2013 ascending and are given by figure...
+
+| Year | Probabilities of an individual being obese (%) |
+|------|------------------------------------------------|
+| 2013 | 30.3                                           |
+| 2014 | 30.2                                           |
+| 2015 | 30.6                                           |
+| 2016 | 30.5                                           |
+
+```{r}
+#| eval: false
+
+
+round(plogis(coef(model.year)[1]),3)
+round(plogis(coef(model.year)[1] + coef(model.year)[2]),3)
+round(plogis(coef(model.year)[1] + coef(model.year)[3]),3)
+round(plogis(coef(model.year)[1] + coef(model.year)[4]),3)
+
+
+```
+
+```{r}
+plot_model(model.year,
+           type = "pred",
+           terms = "Year",
+           axis.title = c("Year", 
+                          "Prob of individual being obese"),
+           title = "Probability of individual being obese per year")
+
+```
+
+## Model Performance 
+
+To asses model performance, we can perform an anova tes
+
+```{r}
+#|eval: false 
+
+model.null <- glm(Obese ~ 1, data = data.obese, family = binomial)
+anova(model.null, model.year, test = "Chi")
+
+
+```
 
 
 
