@@ -1,0 +1,163 @@
+---
+title: "Group Project Code"
+format: html
+editor: visual
+---
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+library(tidyverse)
+library(sjPlot)
+library(nnet)
+library(performance)
+library(knitr)
+
+data <- read.csv("DAProject3.csv", stringsAsFactors = T)
+
+
+```
+
+# Formal Analysis
+
+We aim to fit a nominal logistic regression model defined as follows:
+
+$$
+log(\frac{p_i}{1-p_i}) = \mathbf{x}^{T}_i \boldsymbol{\beta}, ~ i=1,...,14017
+$$ {#eq-model}
+
+Where $p_i$ is the probability of the ith person being obese, $\mathbf{x}^T_i$ is a vector of predictor variables for the ith person and $\boldsymbol{\beta}$ is a vector of coefficient estimates. In this case, we have chosen "no" as our reference category for the response varible Obese.
+
+We now choose reference categories for our five categorical explanatory variables and thus, we define $\mathbf{x}$ and $\boldsymbol{\beta}$ as seen in @eq-vec below.
+
+$$
+\mathbf{x} = 
+\begin{pmatrix}
+1 \\
+x_\text{male} \\
+x_\text{35-44} \\
+\vdots \\
+x_\text{75+}\\
+x_\text{education}\\
+\vdots \\
+x_\text{retired}\\
+x_\text{veg}\\
+x_\text{fruit}
+\end{pmatrix}
+~
+\text{and}
+~ 
+\boldsymbol{\beta} = 
+\begin{pmatrix}
+\beta_0 \\
+\beta_\text{male}\\
+\beta_\text{35-44}\\
+\vdots \\
+\beta_\text{75+} \\
+\beta_\text{education} \\
+\vdots \\
+\beta_\text{retired}\\
+\beta_\text{veg}\\
+\beta_\text{fruit}
+\end{pmatrix}
+$$ {#eq-vec}
+
+Thus, we have chosen the reference categories for the variables Sex, Age, Employment, Veg and Fruit to be "16-24", "Female", "Doing something else" (e.g. unemployed or part-time education), "No" and "No" respectively.
+
+Now, we define the full model.
+
+```{r}
+#| echo: false
+#| warning: false
+#| error: false
+
+model_full <- 
+  multinom(Obese ~ AgeGroup + Fruit + Veg + Sex + Employment, data = data)
+
+```
+
+We note that the model converged after 20 iterations. We can perform backward elimination, a model selection technique, comparing the AIC's of different models to obtain the best fitting model to out data.
+
+```{r}
+#| echo: false
+#| label: tbl-mod
+#| tbl-cap: Summary of estimated coefficients for the full model.
+
+
+model_full %>% tab_model(transform=NULL)
+
+```
+
+@tbl-mod above shows the model summary of our fitted model. As we can see, our confidence interval for $\beta_\text{fruit}$ contains 0. Also, the p-value associated with this estimate is high, implying that there is not statistical evidence to suggest that Fruit is a significant predictor of obesity. Thus, we consider the full model without the effect of Fruit.
+
+```{r}
+#| echo: false
+#| results: hide
+
+model_nofruit <- multinom(Obese ~ AgeGroup + Employment + Veg + Sex, data = data)
+
+```
+
+```{r}
+#| echo: false
+#| label: tbl-mod2
+#| tbl-cap: Summary of estimated coefficients for the full model minus the variable Fruit.
+
+tab_model(model_nofruit, transform=NULL, show.aic = T)
+
+```
+
+@tbl-mod2 shows a reduced AIC value compared to our initial full model. Therefore, we have statistical evidence to suggest that this model is a better fit to our data. Also, as we can see in @tbl-mod2, based on the p-values and confidence intervals, almost all of our estimates are statistically significant. However, we note that some of the levels in the Employment variable appear to have high p-values. Thus, we remove employment from our new model and again compare our AIC values. @tbl-com compares our three fitted models.
+
+```{r}
+#| echo: false
+#| message: false
+#| results: hide
+
+model_nofruit_noemp <- multinom(Obese ~ AgeGroup + Veg + Sex, data = data)
+```
+
+```{r}
+#| echo: false
+#| label: tbl-com
+#| tbl-cap: Table to compare our 3 fitted models.
+
+compare_performance(model_full, model_nofruit, model_nofruit_noemp, metrics = "AIC") %>%
+  kable()
+
+```
+
+Hence, as seen in @tbl-com above, the AIC is minimised for our model will all variables except fruit. Therefore, despite some of the levels in employment having high p-values, we choose to keep this variable in our model and conclude that the model with Age, Sex, Employment and Veg is the best fitting model to our data. However, we note in @tbl-mod2 the low $R^2_{\text{adjusted}}$ value of $0.019$ implying that the model explains only 1.9% of the variability in our data, a poor fit.
+
+Therefore, our final fitted model is displayed in @tbl-mod2 . First, $\beta_0 = -1.43$ represents the log-odds of considering obese vs not obese for a female aged 16-24 who does not eat Veg falls into the employment level "Doing something else" since these are our reference categories. Then, each $\beta_j$ for $j=1,...,14$ shows how the log-odds change when moving from the reference categories to other levels. For example, the log-odds of considering obese vs not obese for a male aged 57+ who is retired and eats veg is given by:
+
+$$
+\begin{aligned}
+&\log \left(\frac{p(Obese|sex =male, age\ge 75,Employment = Retired, Veg = yes) }{p(Not~ Obese|sex =male, age\ge 75,Employment = Retired, Veg = yes)} \right) \\
+&= 
+\hat{\beta}_0 + \hat{\beta}_\text{male} + \hat{\beta}_\text{75+} + \hat{\beta}_\text{retired}+\hat{\beta}_\text{veg}\\
+&= -1.43 -0.11+0.68+0.03-0.16 \\
+&= -0.99
+\end{aligned}
+$$
+
+We can also interprate our coefficients in terms of odds. For example, we can compare the odds of being obese as a male vs that for a female for any categories. Since the coefficients for Age, Employment and Veg do not depend on Sex, we have:
+
+$$
+\begin{aligned}
+\frac{\text{Odds(Obese|sex = male)}}{\text{Odds(Obese|sex = female)}} &= \frac{exp(\hat{\beta_0}+\hat{\beta}_\text{male})}{exp(\hat{\beta_0})}\\
+&= exp(\hat{\beta}_\text{male})\\
+&= exp(-0.11)= 0.8958
+\end{aligned} 
+$$
+
+Therefore, as we can see women are more likely than men to be obese. Specifically, the chances of a man being obese is approximately 11% less than that for a female. This simplification of the exponential terms is the mathematical proof displaying the fact that sex is an independent predictor in our model.
+
+Model assumptions????
+
+```{r}
+
+check_model(model_nofruit, check = c("pp_check","binned_residuals","outliers","qq"))
+```
