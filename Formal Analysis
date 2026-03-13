@@ -1,3 +1,4 @@
+# Formal Analysis 
 For the first question of interest, a logistic regression model is fitted with year as the one categorical explanatory variable. The formula for the model is given below: $$
 y_i \sim \text{Bernoulli}(p_i)
 $$
@@ -266,7 +267,7 @@ $$
 \end{aligned} 
 $$
 
-Therefore, as we can see women are more likely than men to be obese. Specifically, the chances of a man being obese is approximately 11% less than that for a female. This simplification of the exponential terms is the mathematical proof displaying the fact that sex is an independent predictor in our model.
+Therefore, as we can see women are more likely than men to be obese. Specifically, the odds of a man being obese is approximately 11% less than that for a female. This simplification of the exponential terms is the mathematical proof displaying the fact that sex is an independent predictor in our model.
 
 # Conclusion
 
