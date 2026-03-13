@@ -270,6 +270,8 @@ Therefore, as we can see women are more likely than men to be obese. Specificall
 
 # Conclusion
 
+Overall, the results suggest that the prevalence of obesity in Scotland remained fairly stable between 2013 and 2016. In each year, the proportion classified as obese was consistently close to 70% with (69.7% in 2013, 69.8% in 2014, 69.4% in 2015, and 69.5% in 2016), while around 30% were not classified as obese. Although there are small differences between the years, these changes are very minor. This suggests that obesity prevalence did not change significantly during this period and remained relatively consistent across the years analysed.
+
 Overall, the exploratory plots show that obesity prevalence differs across some demographic groups. Age group, sex and  employment status appear to show clearer differences. For example, we found that the odds of a man being obese is approximately 11% less than that for a woman. However, we note that only some levels of employment appear significant. 
 But, through model comparison, we decided to keep the predictor in our model since the AIC was minimised.
 Lifestyle factors such as vegetable intake also appear statistically signficant. However, there seemed to be no statistially significant evidence to suggest the lifestyle factor fruit is a significant predictor of Obesity. 
