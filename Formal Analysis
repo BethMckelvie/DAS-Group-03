@@ -268,12 +268,17 @@ $$
 
 Therefore, as we can see women are more likely than men to be obese. Specifically, the chances of a man being obese is approximately 11% less than that for a female. This simplification of the exponential terms is the mathematical proof displaying the fact that sex is an independent predictor in our model.
 
-Model assumptions????
+# Conclusion
 
-```{r}
+Overall, the exploratory plots show that obesity prevalence differs across some demographic groups. Age group, sex and  employment status appear to show clearer differences. For example, we found that the odds of a man being obese is approximately 11% less than that for a woman. However, we note that only some levels of employment appear significant. 
+But, through model comparison, we decided to keep the predictor in our model since the AIC was minimised.
+Lifestyle factors such as vegetable intake also appear statistically signficant. However, there seemed to be no statistially significant evidence to suggest the lifestyle factor fruit is a significant predictor of Obesity. 
+Thus, through model comparison, using backwards elimination, we decided to remove the factor fruit. This imporved our overall model as it decreased the AIC. 
+Therefore, we conclude that there is statistically significant evidece to suggest that there are differences in obesity by age, gender, socio-economic factors and lifestyle factors.
 
-check_model(model_nofruit, check = c("pp_check","binned_residuals","outliers","qq"))
-```
+These observations provide an initial overview of the data. Aditionally, our low $R^2_\text{adjusted}$ value of 0.019, impies that only 1.9% of the variability in our data is eplained by our model which could be explored further using different statistical models.
+
+
 
 
 
