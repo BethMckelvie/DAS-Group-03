@@ -66,7 +66,21 @@ plot_model(model.year,
 
 ```
 
-From The R output above shows that
+Table... and Figure...   show that the baseline odds of someone being obese in 2013 (the reference year) were 0.43, which was highly statistically significant (p < 0.001), indicating that the baseline probability of obesity was meaningfully different from an even chance. Compared to 2013, the odds of obesity changed modestly across subsequent years:
+
+
+- 2014: Odds ratio of 0.99 — marginally lower odds of obesity compared to 2013 (p = 0.913)
+
+
+- 2015: Odds ratio of 1.02 — slightly higher odds of obesity compared to 2013 (p = 0.749)
+
+
+- 2016: Odds ratio of 1.01 — marginally higher odds of obesity compared to 2013 (p = 0.832)
+
+
+
+None of these year on year changes were statistically significant (all p > 0.05), suggesting there was no major variation in the odds of obesity across the study period. 
+
 
 The probabilities for each year are shown below in table ... order of 2013 ascending and are given by figure...
 
@@ -101,7 +115,7 @@ plot_model(model.year,
 
 ## Model Performance 
 
-To asses model performance, we can perform an anova tes
+To asses model performance, we can perform an 
 
 ```{r}
 #|eval: false 
