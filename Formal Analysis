@@ -38,15 +38,6 @@ $$
 library(sjPlot)
 
 model.year <- glm(Obese ~ Year, data = data.obese, family = binomial)
-model.year %>%
-  tab_model(transform = NULL)
-
-plot_model(model.year, 
-           show.values = TRUE, 
-           transform = NULL, 
-           title = "Log-Odds (Obesity per year)", 
-           show.p = FALSE)
-
 
 
 ```
