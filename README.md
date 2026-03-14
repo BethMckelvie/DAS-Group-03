@@ -93,6 +93,13 @@ Combined source file used when integrating sections of the report.(trial)
 
 Draft version of the conclusions section created during development of the report.
 
+**gpdraftcombined.qmd**
+
+Combined Quarto source file containing the integrated sections of the report and the code used to generate the final analysis.
+
+**gpdraftcombined.pdf**
+
+Compiled PDF output produced from the combined Quarto source file, presenting the formatted results and figures.
 ---
 
 ## Collaborative GitHub Workflow
