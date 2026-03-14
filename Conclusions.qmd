@@ -1,0 +1,19 @@
+---
+title: "Conclusions"
+format: html
+editor: visual
+---
+
+# Conclusions
+
+## 1
+
+Overall, the results suggest that the prevalence of obesity in Scotland remained fairly stable between 2013 and 2016. In each year, the proportion classified as obese was consistently close to 70% with (69.7% in 2013, 69.8% in 2014, 69.4% in 2015, and 69.5% in 2016), while around 30% were not classified as obese. Although there are small differences between the years, these changes are very minor. This suggests that obesity prevalence did not change significantly during this period and remained relatively consistent across the years analysed.
+
+Our exploratory analysis and model selection reveal that obesity prevalence varies notably across demographic and lifestyle segments. Specifically, age, sex, and employment status emerged as key predictors; for instance, men in this dataset had 11% lower odds of obesity compared to women. While only certain employment levels were individually significant, the predictor was retained to minimize the AIC. Regarding lifestyle factors, vegetable intake was a significant predictor, whereas fruit consumption was not. Using backwards elimination, we removed the fruit variable to further optimize the AIC.Ultimately, while age, gender, socio-economic, and lifestyle factors are influential, our model’s $R^2_{\text{adjusted}}$ of 0.019 indicates it explains only 1.9% of the total variability. This suggests that the majority of the variance in obesity is driven by factors not captured in this study, highlighting an opportunity for further research using more complex statistical frameworks.
+
+## 2
+
+Overall, the results suggest that the prevalence of obesity in Scotland remained fairly stable between 2013 and 2016. In each year, the proportion classified as obese was consistently close to 70% with (69.7% in 2013, 69.8% in 2014, 69.4% in 2015, and 69.5% in 2016), while around 30% were not classified as obese. Although there are small differences between the years, these changes are very minor. This suggests that obesity prevalence did not change significantly during this period and remained relatively consistent across the years analysed.
+
+Our analysis confirms that obesity prevalence varies significantly by demographic and lifestyle factors. Key predictors include age, sex, and employment status—specifically, men showed 11% lower odds of obesity than women. While vegetable intake was a significant predictor, fruit consumption was not and was removed via backwards elimination to optimize the model's AIC. Despite these significant correlations, the model’s \$R\^2\_{\\text{adjusted}}\$ of 0.019 indicates it explains only 1.9% of total variability. This suggests that while demographics and basic lifestyle habits are influential, the primary drivers of obesity likely involve more complex variables not captured in this dataset, providing a clear avenue for more sophisticated future research.
