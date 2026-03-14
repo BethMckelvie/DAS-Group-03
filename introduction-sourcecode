@@ -1,0 +1,8 @@
+Introduction
+Obesity is a major public health concern in Scotland and is regularly monitored through the Scottish Health Survey. Examining changes in obesity prevalence over time can help identify trends, and determine whether the situation is improving, worsening, or remaining stable. This analysis investigates whether the prevalence of obesity in Scotland changed between 2013 and 2016, and also examines differences in obesity prevalence across age group, sex, employment status, and lifestyle factors such as fruit and vegetable intake. 
+
+The proportions for each year are compared using the relative percentages of the response variable, obesity status (Yes/No), to identify any noticeable changes in prevalence over the years. Overall, approximately 30% of individuals in the dataset are classified as obese. The plots below compare obesity prevalence across these groups.
+
+Question of Interest:
+Has the prevalence of obesity in Scotland changed over the given years of the Scottish Health Survey?
+Are there any differences in obesity by age, gender, socio-economic status or lifestyle factors?
