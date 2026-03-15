@@ -1,5 +1,6 @@
 ---
 title: "Group Project"
+author: "Group 3: Charlie Redpath, Lavanya Prasad, Nawala Ahmed, Beth McKelvie"
 format:
  pdf:
   fontsize: 8pt
@@ -162,8 +163,6 @@ ggplot(data, aes(x = Fruit, fill = Obese)) +
 
 Lifestyle factors show only small differences in obesity prevalence. Individuals who meet the recommended fruit intake and those who do not both have obesity levels of around 30%. A similar pattern is observed for vegetable intake, where those meeting the recommendation have obesity prevalence of about 30%, compared with roughly 33% among those who do not. Overall, the differences between the groups are relatively small.
 
-
-
 ## Formal Analysis
 
 ### Trends in Obesity Prevalence 2013-2016
@@ -221,7 +220,7 @@ plot_model(model.year,
            show.p = TRUE)
 ```
 
-@tbl-mod_prev and fig-mod_prev show that the baseline odds of someone being obese in 2013 (the reference year) were 0.43, which was highly statistically significant (p \< 0.001), indicating that the baseline probability of obesity was meaningfully different from an even chance. Compared to 2013, the odds of obesity changed modestly across subsequent years:
+@tbl-mod_prev and @fig-mod_prev show that the baseline odds of someone being obese in 2013 (the reference year) were 0.43, which was highly statistically significant (p \< 0.001), indicating that the baseline probability of obesity was meaningfully different from an even chance. Compared to 2013, the odds of obesity changed modestly across subsequent years:
 
 -   2014: Odds ratio of 0.99 — marginally lower odds of obesity compared to 2013 (p = 0.913)
 
@@ -231,7 +230,7 @@ plot_model(model.year,
 
 None of these year on year changes were statistically significant (all p \> 0.05), suggesting there was no major variation in the odds of obesity across the study period. 
 
-The probabilities for each year are shown below in table ... order of 2013 ascending and are given by figure...
+The probabilities for each year are shown below in the table below in ascending order and are also given by @fig-mod_prev2 .
 
 | Year | Probabilities of an individual being obese (%) |
 |------|------------------------------------------------|
@@ -259,6 +258,7 @@ round(plogis(coef(model.year)[1] + coef(model.year)[4]),3)
 #| fig-height: 2
 #| fig-width: 3
 #| fig-align: center
+#| label: fig-mod_prev2
 
 plot_model(model.year,
            type = "pred",
@@ -269,18 +269,18 @@ plot_model(model.year,
 
 #### Model Performance
 
-The Analysis of Deviance Table compares the model performance of a null model against one including Year as a predictor of obesity. The table demonstrates that adding year to the model only reduces the deviance by 0.225, with a large P-value of 0.9733. This again indicates that year isn't a statistically significant predictor of obesity, implying that there isn't any trend over the years surveyed.
+The Analysis of Deviance Table below compares the model performance of a null model against one including Year as a predictor of obesity. The table demonstrates that adding year to the model only reduces the deviance by 0.225, with a large P-value of 0.9733. This again indicates that year isn't a statistically significant predictor of obesity, implying that there isn't any trend over the years surveyed.
 
 ```{r}
 #| echo: false
 #| warning: false
 #| message: false
-#| fig-cap: "ANOVA tbale to assess model performance"
 #| fig-width: 3
 #| fig-height: 2
+#| tbl-cap: "ANOVA tbale to assess model performance"
 
 model.null <- glm(Obese ~ 1, data = data.obese, family = binomial)
-anova(model.null, model.year, test = "Chi")
+anova(model.null, model.year, test = "Chi") %>% kable()
 ```
 
 ### The Impact of Gender, Age, Socio-economic Status and Lifestyle Choices on Obesity Rates
@@ -420,4 +420,4 @@ Therefore, as we can see women are more likely than men to be obese. Specificall
 
 # Conclusion
 
-Overall, obesity prevalence in Scotland remained stable between 2013 and 2016, with around 70% classified as obese each year (69.7% in 2013, 69.8% in 2014, 69.4% in 2015, and 69.5% in 2016) and roughly 30% not obese, indicating no meaningful change over time. However, prevalence varied across demographic and lifestyle groups. Age, sex, and employment status were key predictors, with men showing 11% lower odds of obesity than women. Vegetable intake was significant, while fruit intake was not and was removed through backward elimination to improve AIC. Despite these associations, the model’s adjusted $R^2_\text{adjusted}$ of 0.019 shows that only 1.9% of the variability in obesity was explained, suggesting many influential factors were not captured in the dataset.
+Overall, obesity prevalence in Scotland remained stable between 2013 and 2016, with around 70% classified as not obese each year (69.7% in 2013, 69.8% in 2014, 69.4% in 2015, and 69.5% in 2016) and roughly 30% classified as obese, indicating no meaningful change over time. However, prevalence varied across demographic and lifestyle groups. Age, sex, and employment status were key predictors, with men showing 11% lower odds of obesity than women. Vegetable intake was significant, while fruit intake was not and was therefore removed through backward elimination to improve AIC. Despite these associations, the model’s adjusted $R^2_\text{adjusted}$ of 0.019 shows that only 1.9% of the variability in obesity was explained, suggesting many influential factors were not captured in the dataset.
