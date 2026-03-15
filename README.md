@@ -65,7 +65,7 @@ Code used to produce figures and summaries included in the introduction section 
 
 The formal analysis applies statistical modelling to formally test the research questions.
 
-**FAQ1.qmd**
+**FA1.qmd**
 
 Formal statistical analysis for **Question 1**, including modelling and interpretation of results.
 
@@ -100,6 +100,22 @@ Combined Quarto source file containing the integrated sections of the report and
 **gpdraftcombined.pdf**
 
 Compiled PDF output produced from the combined Quarto source file, presenting the formatted results and figures.
+
+**GP3.qmd**
+
+Final Quarto source file containing the complete integrated report and the code used to generate the final results and figures.
+
+**GP3.pdf**
+
+Compiled PDF output produced from GP3.qmd showing the formatted report during final editing.
+
+**GP3finalsubmit.qmd**
+
+Submission version of the final Quarto source file prepared for the completed group project report.
+
+**GP3finalsubmit.pdf**
+
+Final compiled PDF submitted as the completed version of the group project report.
 ---
 
 ## Collaborative GitHub Workflow
