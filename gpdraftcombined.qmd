@@ -1,0 +1,423 @@
+---
+title: "Group Project"
+author: "Group 3: Charlie Redpath, Lavanya Prasad, Nawala Ahmed, Beth McKelvie"
+format:
+ pdf:
+  fontsize: 8pt
+  geometry: margin=0.75in
+linestretch: 1
+   
+editor: visual
+---
+
+## Introduction
+
+Obesity is a major public health concern in Scotland and is regularly monitored through the Scottish Health Survey. Examining changes in obesity prevalence over time can help identify trends, and determine whether the situation is improving, worsening, or remaining stable. This analysis investigates whether the prevalence of obesity in Scotland changed between 2013 and 2016, and also examines differences in obesity prevalence across age group, sex, employment status, and lifestyle factors such as fruit and vegetable intake.
+
+We will consider the following questions of Interest:
+
+1.  Has the prevalence of obesity in Scotland changed over the given years of the Scottish Health Survey?
+
+2.  Are there any differences in obesity by age, gender, socio-economic status or lifestyle factors?
+
+## Exploratory Analysis
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+library(tidyverse)
+library(ggplot2)
+library(broom)
+library(yardstick)
+library(nnet)
+library(sjPlot)
+library(knitr)
+library(performance)
+library(tidyverse)
+health<- read.csv("DAProject3.csv")
+data <- read.csv("DAProject3.csv",stringsAsFactors = T)
+
+```
+
+The relative proportions of the response variable, obesity status (Yes/No), are compared across years to identify any noticeable changes in obesity prevalence over time. Overall, approximately 30% of individuals in the dataset are classified as obese. The plots below illustrate how obesity prevalence varies across the groups considered.
+
+```{r}
+#| echo: false
+
+health.obesity<- health %>%
+  select(Obese, Year)
+```
+
+### Prevalence of Obesity in Scotland
+
+```{r}
+#| echo: false
+#| label: barplot1
+#| fig-cap: "Barplot of Obesity Prevalence for the Years (2013–2016)"
+#| fig-width: 5
+#| fig-height: 1.5
+ggplot(health.obesity, aes(x = Year, group = Obese)) +
+    geom_bar(aes(y = after_stat(prop), fill = Obese), 
+             stat = "count", position = "dodge") +
+    labs(y = "Proportion", fill = "Obese", title = "Obesity Prevalence for the Years(2013-2016)")
+
+```
+
+The bar plot shows a consistent pattern across the years 2013–2016. In each year, the distribution between the two categories remains very similar. The proportion classified as obese (“Yes”) is approximately 30%, while those classified as not obese (“No”) account for about 69–70%. Overall, the plot indicates that obesity prevalence remains relatively stable across the years shown.
+
+```{r}
+#| echo: FALSE
+#| output: FALSE
+library(tidyverse)
+library(ggplot2)
+
+data <- read.csv("DAProject3.csv", stringsAsFactors = TRUE)
+```
+
+```{r}
+#| echo: FALSE
+data$Obese <- factor(data$Obese)
+```
+
+### Obesity vs Sex
+
+```{r}
+#| echo: false
+#| fig-cap: "Obesity vs Sex"
+#| fig-width: 2.5
+#| fig-height: 1.5
+#| fig-align: center
+data$Sex <- factor(data$Sex)
+ggplot(data, aes(x = Sex, fill = Obese)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    x = "Sex",
+    y = "Percentage"
+  )
+
+```
+
+The percentage of individuals classified as obese is similar for males and females. Around 31% of females are classified as obese compared with about 29% of males. This suggests that the difference in obesity prevalence between the two groups is relatively small.
+
+### Obesity vs Age Group
+
+```{r}
+#| echo: false
+#| fig-cap: "Obesity vs Age Group"
+#| fig-width: 5
+#| fig-height: 1.5
+#| fig-align: center
+data$AgeGroup <- factor(data$AgeGroup)
+ggplot(data, aes(x = AgeGroup, fill = Obese)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    x = "Age Group",
+    y = "Percentage"
+  )
+```
+
+Clear differences in obesity prevalence can be observed across age groups. Approximately 16% of individuals aged 16–24 are classified as obese, and this increases steadily across older age groups. The highest prevalence appears in the 65–74 age group at around 36–37%. The prevalence then decreases slightly to about 29% in the 75+ group.
+
+### Obesity vs Employment
+
+```{r}
+#| echo: false
+#| fig-cap: "Obesity vs Employment"
+#| fig-width: 6
+#| fig-height: 2.5
+#| fig-align: center
+data$Employment <- factor(data$Employment)
+ggplot(data, aes(x = Employment, fill = Obese)) +
+  geom_bar(position = "fill") +
+  labs(
+    title = "Obesity vs Employment",
+    x = "Employment",
+    y = "Percentage"
+  ) +
+  scale_y_continuous(labels = scales::percent) +
+  coord_flip()
+```
+
+Differences in obesity prevalence are visible across employment categories. Individuals permanently unable to work show the highest obesity prevalence at roughly 42–43%. Those looking after home or family also have relatively high obesity levels at around 37%. In contrast, individuals in full-time education have the lowest prevalence at approximately 17%.
+
+### Obesity vs Lifestyle Choices
+
+```{r}
+#| echo: false
+#| fig-cap: "Obesity vs Intake"
+#| fig-height: 1.5
+#| fig-width: 2.5
+#| layout-ncol: 2
+ggplot(data, aes(x = Veg, fill = Obese)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent)
+
+ggplot(data, aes(x = Fruit, fill = Obese)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent)
+```
+
+Lifestyle factors show only small differences in obesity prevalence. Individuals who meet the recommended fruit intake and those who do not both have obesity levels of around 30%. A similar pattern is observed for vegetable intake, where those meeting the recommendation have obesity prevalence of about 30%, compared with roughly 33% among those who do not. Overall, the differences between the groups are relatively small.
+
+## Formal Analysis
+
+### Trends in Obesity Prevalence 2013-2016
+
+For the first question of interest, a logistic regression model is fitted with year as the one categorical explanatory variable. The formula for the model is given below: $$
+y_i \sim \text{Bernoulli}(p_i)
+$$
+
+$$
+\text{logit}(p_i) = \alpha + \beta_{\text{2014}} \times \mathbb{I}_{\text{Year}}(\text{2014}) + \beta_{\text{2015}} \times \mathbb{I}_{\text{Year}}(\text{2015}) + \beta_{\text{2016}} \times \mathbb{I}_{\text{Year}}(\text{2016})
+$$
+
+-   Where
+
+    -   $y_i$ - the binary obesity outcome (Yes/No) for individual $i$
+    -   $p_i$ - the probability of individual $i$ being obese
+    -   $\alpha$ - the intercept, representing the log-odds of obesity in the reference year (2013)
+    -   $\beta_{\text{2014}}, \beta_{\text{2015}}, \beta_{\text{2016}}$ - the log-odds ratios for each year relative to the reference year (2013)
+    -   $\mathbb{I}_{\text{Year}}(\text{2014}), \mathbb{I}_{\text{Year}}(\text{2015}), \mathbb{I}_{\text{Year}}(\text{2016})$ - indicator functions equal to 1 if the observation is from that year, and 0 otherwise \$\$
+
+```{r}
+#| echo: false
+data <- read.csv("DAProject3.csv",stringsAsFactors = T)
+    data.obese <- data %>%
+      select(Obese, Year)
+
+
+data.obese$Year <- as.factor(data.obese$Year ) 
+model.year <- glm(Obese ~ Year, data = data.obese, family = binomial)
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| label: tbl-mod_prev
+
+model.year %>%
+  tab_model(transform = "exp")
+
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| label: fig-mod_prev
+#| fig-cap: "Summary of fitted model for the differences in obesity prevalance."
+#| fig-width: 3
+#| fig-height: 2
+plot_model(model.year,
+           transform = "exp",
+           show.values = TRUE,
+           title = "Odds (Obese)",
+           show.p = TRUE)
+```
+
+@tbl-mod_prev and @fig-mod_prev show that the baseline odds of someone being obese in 2013 (the reference year) were 0.43, which was highly statistically significant (p \< 0.001), indicating that the baseline probability of obesity was meaningfully different from an even chance. Compared to 2013, the odds of obesity changed modestly across subsequent years:
+
+-   2014: Odds ratio of 0.99 — marginally lower odds of obesity compared to 2013 (p = 0.913)
+
+-   2015: Odds ratio of 1.02 — slightly higher odds of obesity compared to 2013 (p = 0.749)
+
+-   2016: Odds ratio of 1.01 — marginally higher odds of obesity compared to 2013 (p = 0.832)
+
+None of these year on year changes were statistically significant (all p \> 0.05), suggesting there was no major variation in the odds of obesity across the study period. 
+
+The probabilities for each year are shown below in the table below in ascending order and are also given by @fig-mod_prev2 .
+
+| Year | Probabilities of an individual being obese (%) |
+|------|------------------------------------------------|
+| 2013 | 30.3                                           |
+| 2014 | 30.2                                           |
+| 2015 | 30.6                                           |
+| 2016 | 30.5                                           |
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| results: hide
+round(plogis(coef(model.year)[1]),3)
+round(plogis(coef(model.year)[1] + coef(model.year)[2]),3)
+round(plogis(coef(model.year)[1] + coef(model.year)[3]),3)
+round(plogis(coef(model.year)[1] + coef(model.year)[4]),3)
+
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-height: 2
+#| fig-width: 3
+#| fig-align: center
+#| label: fig-mod_prev2
+
+plot_model(model.year,
+           type = "pred",
+           terms = "Year",
+           axis.title = c("Year", "Probability of being obese"),
+           title = "Predicted probability of obesity by year")
+```
+
+#### Model Performance
+
+The Analysis of Deviance Table below compares the model performance of a null model against one including Year as a predictor of obesity. The table demonstrates that adding year to the model only reduces the deviance by 0.225, with a large P-value of 0.9733. This again indicates that year isn't a statistically significant predictor of obesity, implying that there isn't any trend over the years surveyed.
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-width: 3
+#| fig-height: 2
+#| tbl-cap: "ANOVA tbale to assess model performance"
+
+model.null <- glm(Obese ~ 1, data = data.obese, family = binomial)
+anova(model.null, model.year, test = "Chi") %>% kable()
+```
+
+### The Impact of Gender, Age, Socio-economic Status and Lifestyle Choices on Obesity Rates
+
+We aim to fit a nominal logistic regression model defined as follows:
+
+$$
+log(\frac{p_i}{1-p_i}) = \mathbf{x}^{T}_i \boldsymbol{\beta}, ~ i=1,...,14017
+$$ {#eq-model}
+
+Where $p_i$ is the probability of the ith person being obese, $\mathbf{x}^T_i$ is a vector of predictor variables for the ith person and $\boldsymbol{\beta}$ is a vector of coefficient estimates. In this case, we have chosen "no" as our reference category for the response varible Obese.
+
+We now choose reference categories for our five categorical explanatory variables and thus, we define $\mathbf{x}$ and $\boldsymbol{\beta}$ as seen in @eq-vec below.
+
+$$
+\mathbf{x} = 
+\begin{pmatrix}
+1 \\
+x_\text{male} \\
+x_\text{35-44} \\
+\vdots \\
+x_\text{75+}\\
+x_\text{education}\\
+\vdots \\
+x_\text{retired}\\
+x_\text{veg}\\
+x_\text{fruit}
+\end{pmatrix}
+~
+\text{and}
+~ 
+\boldsymbol{\beta} = 
+\begin{pmatrix}
+\beta_0 \\
+\beta_\text{male}\\
+\beta_\text{35-44}\\
+\vdots \\
+\beta_\text{75+} \\
+\beta_\text{education} \\
+\vdots \\
+\beta_\text{retired}\\
+\beta_\text{veg}\\
+\beta_\text{fruit}
+\end{pmatrix}
+$$ {#eq-vec}
+
+Thus, we have chosen the reference categories for the variables Sex, Age, Employment, Veg and Fruit to be "16-24", "Female", "Doing something else" (e.g. unemployed or part-time education), "No" and "No" respectively.
+
+Now, we define the full model.
+
+```{r}
+#| echo: false
+#| warning: false
+#| error: false
+
+model_full <- 
+  multinom(Obese ~ AgeGroup + Fruit + Veg + Sex + Employment, data = data)
+
+```
+
+We note that the model converged after 20 iterations. We can perform backward elimination, a model selection technique, comparing the AIC's of different models to obtain the best fitting model to out data.
+
+```{r}
+#| echo: false
+#| label: tbl-mod
+#| tbl-cap: Summary of estimated coefficients for the full model.
+
+
+model_full %>% tab_model(transform=NULL)
+
+```
+
+@tbl-mod above shows the model summary of our fitted model. As we can see, our confidence interval for $\beta_\text{fruit}$ contains 0. Also, the p-value associated with this estimate is high, implying that there is not statistical evidence to suggest that Fruit is a significant predictor of obesity. Thus, we consider the full model without the effect of Fruit.
+
+```{r}
+#| echo: false
+#| results: hide
+
+model_nofruit <- multinom(Obese ~ AgeGroup + Employment + Veg + Sex, data = data)
+
+```
+
+```{r}
+#| echo: false
+#| label: tbl-mod2
+#| tbl-cap: Summary of estimated coefficients for the full model minus the variable Fruit.
+
+tab_model(model_nofruit, transform=NULL, show.aic = T)
+
+```
+
+@tbl-mod2 shows a reduced AIC value compared to our initial full model. Therefore, we have statistical evidence to suggest that this model is a better fit to our data. Also, as we can see in @tbl-mod2, based on the p-values and confidence intervals, almost all of our estimates are statistically significant. However, we note that some of the levels in the Employment variable appear to have high p-values. Thus, we remove employment from our new model and again compare our AIC values. @tbl-com compares our three fitted models.
+
+```{r}
+#| echo: false
+#| message: false
+#| results: hide
+
+model_nofruit_noemp <- multinom(Obese ~ AgeGroup + Veg + Sex, data = data)
+```
+
+```{r}
+#| echo: false
+#| label: tbl-com
+#| tbl-cap: Table to compare our 3 fitted models.
+
+compare_performance(model_full, model_nofruit, model_nofruit_noemp, metrics = "AIC") %>%
+  kable()
+
+```
+
+Hence, as seen in @tbl-com above, the AIC is minimised for our model will all variables except fruit. Therefore, despite some of the levels in employment having high p-values, we choose to keep this variable in our model and conclude that the model with Age, Sex, Employment and Veg is the best fitting model to our data. However, we note in @tbl-mod2 the low $R^2_{\text{adjusted}}$ value of $0.019$ implying that the model explains only 1.9% of the variability in our data, a poor fit.
+
+Therefore, our final fitted model is displayed in @tbl-mod2 . First, $\beta_0 = -1.43$ represents the log-odds of considering obese vs not obese for a female aged 16-24 who does not eat Veg falls into the employment level "Doing something else" since these are our reference categories. Then, each $\beta_j$ for $j=1,...,14$ shows how the log-odds change when moving from the reference categories to other levels. For example, the log-odds of considering obese vs not obese for a male aged 57+ who is retired and eats veg is given by:
+
+$$
+\begin{aligned}
+&\log \left(\frac{p(Obese|sex =male, age\ge 75,Employment = Retired, Veg = yes) }{p(Not~ Obese|sex =male, age\ge 75,Employment = Retired, Veg = yes)} \right) \\
+&= 
+\hat{\beta}_0 + \hat{\beta}_\text{male} + \hat{\beta}_\text{75+} + \hat{\beta}_\text{retired}+\hat{\beta}_\text{veg}\\
+&= -1.43 -0.11+0.68+0.03-0.16 \\
+&= -0.99
+\end{aligned}
+$$
+
+We can also interprate our coefficients in terms of odds. For example, we can compare the odds of being obese as a male vs that for a female for any categories. Since the coefficients for Age, Employment and Veg do not depend on Sex, we have:
+
+$$
+\begin{aligned}
+\frac{\text{Odds(Obese|sex = male)}}{\text{Odds(Obese|sex = female)}} &= \frac{exp(\hat{\beta_0}+\hat{\beta}_\text{male})}{exp(\hat{\beta_0})}\\
+&= exp(\hat{\beta}_\text{male})\\
+&= exp(-0.11)= 0.8958
+\end{aligned} 
+$$
+
+Therefore, as we can see women are more likely than men to be obese. Specifically, the odds of a man being obese is approximately 11% less than that for a female. This simplification of the exponential terms is the mathematical proof displaying the fact that sex is an independent predictor in our model.
+
+# Conclusion
+
+Overall, obesity prevalence in Scotland remained stable between 2013 and 2016, with around 70% classified as not obese each year (69.7% in 2013, 69.8% in 2014, 69.4% in 2015, and 69.5% in 2016) and roughly 30% classified as obese, indicating no meaningful change over time. However, prevalence varied across demographic and lifestyle groups. Age, sex, and employment status were key predictors, with men showing 11% lower odds of obesity than women. Vegetable intake was significant, while fruit intake was not and was therefore removed through backward elimination to improve AIC. Despite these associations, the model’s adjusted $R^2_\text{adjusted}$ of 0.019 shows that only 1.9% of the variability in obesity was explained, suggesting many influential factors were not captured in the dataset.
