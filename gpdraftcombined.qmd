@@ -13,7 +13,7 @@ editor: visual
 
 Obesity is a major public health concern in Scotland and is regularly monitored through the Scottish Health Survey. Examining changes in obesity prevalence over time can help identify trends, and determine whether the situation is improving, worsening, or remaining stable. This analysis investigates whether the prevalence of obesity in Scotland changed between 2013 and 2016, and also examines differences in obesity prevalence across age group, sex, employment status, and lifestyle factors such as fruit and vegetable intake.
 
-Questions of Interest:
+We will consider the following questions of Interest:
 
 1.  Has the prevalence of obesity in Scotland changed over the given years of the Scottish Health Survey?
 
@@ -64,7 +64,7 @@ ggplot(health.obesity, aes(x = Year, group = Obese)) +
 
 ```
 
-The bar plot shows a consistent pattern across the years 2013–2016. In each year, the distribution between the two categories remains very similar. The proportion classified as obese (“Yes”) is approximately 69–70%, while those classified as not obese (“No”) account for about 30–31%. Overall, the plot indicates that obesity prevalence remains relatively stable across the years shown.
+The bar plot shows a consistent pattern across the years 2013–2016. In each year, the distribution between the two categories remains very similar. The proportion classified as obese (“Yes”) is approximately 30%, while those classified as not obese (“No”) account for about 69–70%. Overall, the plot indicates that obesity prevalence remains relatively stable across the years shown.
 
 ```{r}
 #| echo: FALSE
@@ -166,7 +166,7 @@ Lifestyle factors show only small differences in obesity prevalence. Individuals
 
 ## Formal Analysis
 
-### Question of Interest 1
+### Trends in Obesity Prevalence 2013-2016
 
 For the first question of interest, a logistic regression model is fitted with year as the one categorical explanatory variable. The formula for the model is given below: $$
 y_i \sim \text{Bernoulli}(p_i)
@@ -199,6 +199,7 @@ model.year <- glm(Obese ~ Year, data = data.obese, family = binomial)
 #| echo: false
 #| warning: false
 #| message: false
+#| label: tbl-mod_prev
 
 model.year %>%
   tab_model(transform = "exp")
@@ -209,8 +210,8 @@ model.year %>%
 #| echo: false
 #| warning: false
 #| message: false
-#| label: plot1
-#| fig-cap: "please label"
+#| label: fig-mod_prev
+#| fig-cap: "Summary of fitted model for the differences in obesity prevalance."
 #| fig-width: 3
 #| fig-height: 2
 plot_model(model.year,
@@ -220,7 +221,7 @@ plot_model(model.year,
            show.p = TRUE)
 ```
 
-Table... and Figure... show that the baseline odds of someone being obese in 2013 (the reference year) were 0.43, which was highly statistically significant (p \< 0.001), indicating that the baseline probability of obesity was meaningfully different from an even chance. Compared to 2013, the odds of obesity changed modestly across subsequent years:
+@tbl-mod_prev and fig-mod_prev show that the baseline odds of someone being obese in 2013 (the reference year) were 0.43, which was highly statistically significant (p \< 0.001), indicating that the baseline probability of obesity was meaningfully different from an even chance. Compared to 2013, the odds of obesity changed modestly across subsequent years:
 
 -   2014: Odds ratio of 0.99 — marginally lower odds of obesity compared to 2013 (p = 0.913)
 
@@ -274,6 +275,7 @@ The Analysis of Deviance Table compares the model performance of a null model ag
 #| echo: false
 #| warning: false
 #| message: false
+#| fig-cap: "ANOVA tbale to assess model performance"
 #| fig-width: 3
 #| fig-height: 2
 
@@ -281,7 +283,7 @@ model.null <- glm(Obese ~ 1, data = data.obese, family = binomial)
 anova(model.null, model.year, test = "Chi")
 ```
 
-### Question of Interest 2
+### The Impact of Gender, Age, Socio-economic Status and Lifestyle Choices on Obesity Rates
 
 We aim to fit a nominal logistic regression model defined as follows:
 
